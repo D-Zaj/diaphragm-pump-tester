@@ -117,6 +117,9 @@ class MainGUI:
         Run_Frame.grid(column=0, columnspan=1, row=1)
         mainframe.grid(column=0, row=0)
 
+        window.update_idletasks()
+        window.after_idle(lambda: window.minsize(window.winfo_width(), window.winfo_height()))
+
     # Enables or disables logger related entries based on checkbox status
     def check_handler(self):
         if self.logger_flag.get():
