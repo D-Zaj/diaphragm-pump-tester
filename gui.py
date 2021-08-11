@@ -10,6 +10,7 @@ class MainGUI:
 
         # Create root window
         window.title("Diaphragm Pump Tester")
+        window.iconbitmap(default="transparent.ico")
         window.rowconfigure(0, weight=1)
         window.columnconfigure(0, weight=1)
 
