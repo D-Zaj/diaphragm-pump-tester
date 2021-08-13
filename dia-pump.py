@@ -14,28 +14,25 @@ class Pump_Control:
         # Other variables
         self.PWM_FREQ = freq
         self.NUM_CYCLES = 20
-        self.duty_cycle = 100 # Initialize duty cycle at 100% (which means pump is off)
         self.logger_flag = False
         self.stop = False
 
         # GPIO Pin Setup
-        IO.setup(PWM_PIN, IO.OUT)
-        IO.setup(TACH_PIN, IO.IN)
-        self.p = IO.PWM(PWM_PIN, PWM_FREQ)
+        IO.setup(self.PWM_PIN, IO.OUT)
+        IO.setup(self.TACH_PIN, IO.IN)
+        self.p = IO.PWM(self.PWM_PIN, self.PWM_FREQ)
 
         # GPIO Pin Initializations
-        self.p.start(self.duty_cycle)
+        self.p.start(100) # Start pump at 100% duty (which is off)
         
-    def run_pump(self, duty_cycle=0, run_time=0):
-        start_time = time.time()
-        current_time = time.time()
-        if (run_time > 0):
-            while(not self.stop and (current_time - start_time < run_time)):
-                
-                # Do stuff, run pump,
-        else:
-            self.p.ChangeDutyCycle(duty_cycle)
-    
+    def run_pump(self, duty_cycle):
+        self.p.ChangeDutyCycle(duty_cycle)
+
     def stop(self):
-        self.stop = True
+        self.p.ChangeDutyCycle(100)
+    
+    def get_freq(self):
+        
+    
+
         
