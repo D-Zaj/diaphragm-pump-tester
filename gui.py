@@ -57,7 +57,7 @@ class MainGUI:
         # Checkbox to select whether program should log frequency readings
         log_checkbox_frame = ttk.Frame(Logger_Frame, padding="10 5")
         self.logger_flag = IntVar()
-        log_box = ttk.Checkbutton(log_checkbox_frame, text="Log Readings", variable=self.logger_flag, command=self.check_handler)
+        log_box = ttk.Checkbutton(log_checkbox_frame, text="Enable Data Logging", variable=self.logger_flag, command=self.check_handler)
         log_box.pack(side=RIGHT)
 
         # Interval entry to specify time between readings
