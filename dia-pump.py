@@ -32,7 +32,16 @@ class Pump_Control:
         self.p.ChangeDutyCycle(100)
     
     def get_freq(self):
-        
-    
+        freq = 0
+        count = 0
+        start_time = time.time()
+        while (count < self.NUM_CYCLES):
+            flag = IO.wait_for_edge(self.TACH_PIN, IO.FALLING, timeout=1000)
+            if flag is None:
+                freq = 0
+                break
 
-        
+            count += 1
+        time_elapsed = time.time() - start_time
+        freq = self.NUM_CYCLES / time_elapsed
+        return freq
