@@ -3,45 +3,49 @@ import time
 
 class Pump_Control:
     
-    def __init__(self, pwm_pin, tach_pin, freq=500):
+    def __init__( self ):
         IO.setwarnings(False)
         IO.setmode(IO.BCM)
 
         # Pin Definitions
-        self.PWM_PIN = pwm_pin
-        self.TACH_PIN = tach_pin
+        self.PUMP_PINS = [18, 19, 20, 21, 22]
+        self.TACH_PINS = [4, 5, 6, 7, 8]
 
         # Other variables
-        self.PWM_FREQ = freq
         self.NUM_CYCLES = 20
         self.logger_flag = False
         self.stop = False
 
         # GPIO Pin Setup
-        IO.setup(self.PWM_PIN, IO.OUT)
-        IO.setup(self.TACH_PIN, IO.IN)
-        self.p = IO.PWM(self.PWM_PIN, self.PWM_FREQ)
+        for pin in self.PUMP_PINS:
+            IO.setup(pin, IO.OUT)
+        
+        for pin in self.TACH_PINS:
+            IO.setup(pin, IO.IN)
 
         # GPIO Pin Initializations
-        self.p.start(100) # Start pump at 100% duty (which is off)
+        for pin in self.PUMP_PINS:
+            IO.output(pin, IO.HIGH)
         
-    def run_pump(self, duty_cycle):
-        self.p.ChangeDutyCycle(duty_cycle)
+    def run_pump( self ):
+        for pin in self.PUMP_PINS:
+            IO.output(pin, IO.LOW)
 
     def stop(self):
-        self.p.ChangeDutyCycle(100)
+        for pin in self.PUMP_PINS:
+            IO.output(pin, IO.HIGH)
     
     def get_freq(self):
-        freq = 0
-        count = 0
-        start_time = time.time()
-        while (count < self.NUM_CYCLES):
-            flag = IO.wait_for_edge(self.TACH_PIN, IO.FALLING, timeout=1000)
-            if flag is None:
-                freq = 0
-                break
-
-            count += 1
-        time_elapsed = time.time() - start_time
-        freq = self.NUM_CYCLES / time_elapsed
+        freq = []
+        for i in range(5):
+            count = 0
+            start_time = time.time()
+            while (count < self.NUM_CYCLES):
+                flag = IO.wait_for_edge(self.TACH_PINS[i], IO.FALLING, timeout=1000)
+                if flag is None:
+                    freq[i] = 0
+                    break
+                count += 1
+            time_elapsed = time.time() - start_time
+            freq[i] = self.NUM_CYCLES / time_elapsed
         return freq
