@@ -27,7 +27,7 @@ class Pump_Control:
         for pin in self.PUMP_PINS:
             IO.output(pin, IO.HIGH)
         
-    def run_pump( self ):
+    def run( self ):
         for pin in self.PUMP_PINS:
             IO.output(pin, IO.LOW)
 
