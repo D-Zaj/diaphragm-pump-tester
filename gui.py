@@ -20,7 +20,7 @@ class MainGUI:
         self.FILE_PATH = "tach_log.csv"
         self.STOP_MSG = "Stopped pumps."
         self.RUN_MSG = "Started pumps."
-        self.NO_INPUT = ["N/A","N/A","N/A","N/A","N/A"]
+        self.NO_INPUT = ["---","---","---","---","---"]
         self.LOG_INTERVAL = 60000
         self.is_running = False
 
@@ -112,7 +112,7 @@ class MainGUI:
             else:
                 self.run_callback()
             
-            if self.logger.get_status is not True:
+            if not self.logger.get_status:
                 self.logger.open(self.FILE_PATH)
 
             self.logger.write(self.NO_INPUT, self.RUN_MSG)
