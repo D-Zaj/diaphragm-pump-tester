@@ -25,7 +25,7 @@ class Pump_Control:
 
         # GPIO Pin Initializations
         for pin in self.PUMP_PINS:
-            IO.output(pin, IO.HIGH)
+            IO.output(pin, IO.HIGH) # Set all pump ctrl pins high so pumps are initially off
         
     def run( self ):
         for pin in self.PUMP_PINS:
@@ -43,9 +43,9 @@ class Pump_Control:
             while (count < self.NUM_CYCLES):
                 flag = IO.wait_for_edge(self.TACH_PINS[i], IO.FALLING, timeout=1000)
                 if flag is None:
-                    freq[i] = 0
+                    freq.append(0)
                     break
                 count += 1
             time_elapsed = time.time() - start_time
-            freq[i] = self.NUM_CYCLES / time_elapsed
+            freq.append(self.NUM_CYCLES / time_elapsed)
         return freq
