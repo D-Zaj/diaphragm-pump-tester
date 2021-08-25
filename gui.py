@@ -28,15 +28,8 @@ class MainGUI(tkinter.Tk):
         self.LOG_INTERVAL = 2000
         self.is_running = False
 
-
         """Initialize Logging"""
-        self.logger = Logger()
-        if self.DEBUG: print(self.logger.get_status)
-        self.logger.open(self.FILE_PATH)
-        if self.DEBUG: print(self.logger.get_status)
-        if self.DEBUG: print("Opened tach log")
-        self.logger.write(self.NO_INPUT,"Opened log file.")
-
+        self.logger = Logger(self.FILE_PATH)
 
         # Create root window
         self.title( "Diaphragm Pump Tester" )
@@ -112,7 +105,7 @@ class MainGUI(tkinter.Tk):
         self.run_callback = fn
 
     def run_handler( self ):
-        if self.run_callback is not None:
+        if self.run_callback is not None and self.is_running is not True:
             rt = int( self.Run_time.get() )
             unit = self.rt_unit.get()
             if  rt > 0:
@@ -121,13 +114,6 @@ class MainGUI(tkinter.Tk):
             else:
                 self.run_callback()
             
-            print(self.logger.get_status)
-            if self.DEBUG:
-                if (self.logger.get_status is not True):
-                    print("It works!")
-            if self.logger.get_status is not True:
-                self.logger.open(self.FILE_PATH)
-
             self.logger.write(self.NO_INPUT, self.RUN_MSG)
             self.is_running = True
             self.after( self.LOG_INTERVAL, self.auto_log )
@@ -160,7 +146,6 @@ class MainGUI(tkinter.Tk):
         if self.stop_btn_callback is not None and self.is_running:
             self.stop_btn_callback()
             self.logger.write(self.NO_INPUT, self.STOP_MSG)
-            self.logger.close()
             self.is_running = False
         else:
             print("Testing stop button")
