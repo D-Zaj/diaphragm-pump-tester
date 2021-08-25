@@ -22,8 +22,8 @@ class MainGUI(tkinter.Tk):
 
         # Log related vars
         self.FILE_PATH = "tach_log.csv"
-        self.STOP_MSG = "Stopped pumps."
-        self.RUN_MSG = "Started pumps."
+        self.STOP_MSG = "Stopped pumps"
+        self.RUN_MSG = "Started pumps"
         self.NO_INPUT = ["---","---","---","---","---"]
         self.LOG_INTERVAL = 2000
         self.is_running = False
@@ -129,9 +129,9 @@ class MainGUI(tkinter.Tk):
         if self.freq_callback is not None and self.is_running:
             freq = self.freq_callback()
             self.logger.write(freq, "Manual freq log")
-            print("Pump 1: {}, Pump 2: {}, Pump 3: {}, Pump 4: {}, Pump 5: {}".format(freq[0], freq[1], freq[2], freq[3], freq[4]) )
+            if self.DEBUG: print("Pump 1: {}, Pump 2: {}, Pump 3: {}, Pump 4: {}, Pump 5: {}".format(freq[0], freq[1], freq[2], freq[3], freq[4]) )
         else:
-            print("Error, freq callback not set")
+            print("Error, freq callback not set or pumps not running")
 
     def auto_log( self ):
         if self.freq_callback is not None and self.is_running:
