@@ -5,9 +5,9 @@ import random
 # from dia_pump import Pump_Control
 
 def freq_test():
-    freq = [0,0,0,0,0]
+    freq = []
     for i in range(5):
-        freq[i] = random.randint(0, 100)
+        freq.append(random.randint(0,100))
     return freq
 
 def stop_func():
