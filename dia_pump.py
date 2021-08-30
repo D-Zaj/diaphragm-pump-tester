@@ -4,6 +4,7 @@ import time
 class Pump_Control:
     
     def __init__( self ):
+        
         IO.setwarnings(False)
         IO.setmode(IO.BCM)
 
@@ -26,26 +27,31 @@ class Pump_Control:
         # GPIO Pin Initializations
         for pin in self.PUMP_PINS:
             IO.output(pin, IO.HIGH) # Set all pump ctrl pins high so pumps are initially off
-        
-    def run( self ):
+    
+    def run_all( self ):
         for pin in self.PUMP_PINS:
             IO.output(pin, IO.LOW)
 
-    def stop(self):
+    def stop_all( self ):
         for pin in self.PUMP_PINS:
             IO.output(pin, IO.HIGH)
     
-    def get_freq(self):
+    def get_freq( self ):
         freq = []
-        for i in range(5):
+        for pin in self.TACH_PINS:
+            pump_off = False
             count = 0
             start_time = time.time()
             while (count < self.NUM_CYCLES):
-                flag = IO.wait_for_edge(self.TACH_PINS[i], IO.FALLING, timeout=1000)
+                flag = IO.wait_for_edge(pin, IO.FALLING, timeout=1000)
                 if flag is None:
-                    freq.append(0)
+                    pump_off = True
                     break
                 count += 1
-            time_elapsed = time.time() - start_time
-            freq.append(self.NUM_CYCLES / time_elapsed)
+            
+            if pump_off:
+                freq.append(0)
+            else:
+                time_elapsed = time.time() - start_time
+                freq.append(self.NUM_CYCLES / time_elapsed)
         return freq
