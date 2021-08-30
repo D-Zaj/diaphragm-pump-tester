@@ -8,8 +8,8 @@ class Pump_Control:
         IO.setmode(IO.BCM)
 
         # Pin Definitions
-        self.PUMP_PINS = [18, 19, 20, 21, 22]
-        self.TACH_PINS = [4, 5, 6, 7, 8]
+        self.PUMP_PINS = [17, 23, 10, 5, 16]
+        self.TACH_PINS = [18, 24, 25, 6, 19]
 
         # Other variables
         self.NUM_CYCLES = 20
