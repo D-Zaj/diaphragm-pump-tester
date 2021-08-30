@@ -25,7 +25,7 @@ class MainGUI(tkinter.Tk):
         self.STOP_MSG = "Stopped pumps"
         self.RUN_MSG = "Started pumps"
         self.NO_INPUT = ["---","---","---","---","---"]
-        self.LOG_INTERVAL = 2000
+        self.LOG_INTERVAL = 10 #Defines automatic logging interval in seconds
         self.is_running = False
 
         """Initialize Logging"""
@@ -33,7 +33,7 @@ class MainGUI(tkinter.Tk):
 
         # Create root window
         self.title( "Diaphragm Pump Tester" )
-        self.iconbitmap( default="transparent.ico" )
+        # self.iconbitmap( default="transparent.ico" )
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
@@ -116,7 +116,7 @@ class MainGUI(tkinter.Tk):
             
             self.logger.write(self.NO_INPUT, self.RUN_MSG)
             self.is_running = True
-            self.after( self.LOG_INTERVAL, self.auto_log )
+            self.after( self.LOG_INTERVAL * 1000, self.auto_log )
 
         else:
             print("Testing run button")
@@ -126,18 +126,23 @@ class MainGUI(tkinter.Tk):
         self.freq_callback = fn
     
     def freq_handler( self ):
+        if self.DEBUG: print("Getting pump frequency...")
         if self.freq_callback is not None and self.is_running:
             freq = self.freq_callback()
             self.logger.write(freq, "Manual freq log")
             if self.DEBUG: print("Pump 1: {}, Pump 2: {}, Pump 3: {}, Pump 4: {}, Pump 5: {}".format(freq[0], freq[1], freq[2], freq[3], freq[4]) )
         else:
             print("Error, freq callback not set or pumps not running")
+        if self.DEBUG: print("Done.")
 
     def auto_log( self ):
         if self.freq_callback is not None and self.is_running:
+            if self.DEBUG: print("Getting pump frequencies...")
             freq = self.freq_callback()
+            if self.DEBUG: print("Done.")
+            
             self.logger.write(freq, "Automatic freq log")
-            self.after( self.LOG_INTERVAL, self.auto_log )
+            self.after( self.LOG_INTERVAL * 1000, self.auto_log )
     
     def set_stop_callback( self, fn ):
         self.stop_btn_callback = fn
