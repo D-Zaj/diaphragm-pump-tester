@@ -1,6 +1,7 @@
 from tkinter import *
 import tkinter
 import tkinter.ttk as ttk
+import math
 from logger import Logger
 
 class MainGUI(tkinter.Tk):
@@ -19,6 +20,8 @@ class MainGUI(tkinter.Tk):
         self.Duty_cycle = IntVar()
         self.Run_time = StringVar()
         self.rt_unit = StringVar()
+
+        self.timer_interval = 5 * self.time_units["sec"]
 
         # Log related vars
         self.FILE_PATH = "tach_log.csv"
@@ -106,18 +109,16 @@ class MainGUI(tkinter.Tk):
 
     def run_handler( self ):
         if self.run_callback is not None and self.is_running is not True:
+            self.run_callback()
+            self.is_running = True
             rt = int( self.Run_time.get() )
             unit = self.rt_unit.get()
             if  rt > 0:
-                self.run_callback()
                 self.after( rt * 1000 * self.time_units[unit], self.stop_handler )
-            else:
-                self.run_callback()
-            
-            self.logger.write(self.NO_INPUT, self.RUN_MSG)
-            self.is_running = True
-            self.after( self.LOG_INTERVAL * 1000, self.auto_log )
+                self.timer( rt * self.time_units[unit] )
 
+            self.logger.write(self.NO_INPUT, self.RUN_MSG)
+            self.after( self.LOG_INTERVAL * 1000, self.auto_log )
         else:
             print("Testing run button")
             print("Run time = %d" % (int(self.Run_time.get()) * 1000 * self.time_units[self.rt_unit.get()]) )
@@ -154,3 +155,12 @@ class MainGUI(tkinter.Tk):
             self.is_running = False
         else:
             print("Testing stop button")
+
+    def timer( self, time ):
+        hour = math.floor(time / self.time_units["hr"])
+        minute = math.floor((time - hour * self.time_units["hr"]) / 60)
+        sec = time - hour * self.time_units["hr"] - minute * self.time_units["min"]
+        print("Time left in test: {:02d}:{:02d}:{:02d}".format(hour, minute, sec))
+
+        if self.is_running and (time-self.timer_interval > 0):
+            self.after(self.timer_interval * 1000, self.timer, time - self.timer_interval)
