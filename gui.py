@@ -17,7 +17,6 @@ class MainGUI(tkinter.Tk):
         self.time_units = {"sec" : 1, "min" : 60, "hr" : 3600, "days" : 86400}
         self.DEBUG = True
 
-        self.Duty_cycle = IntVar()
         self.Run_time = StringVar()
         self.rt_unit = StringVar()
 
@@ -46,20 +45,6 @@ class MainGUI(tkinter.Tk):
         """ Create first major frame for test settings  """
         self.Control_Frame = ttk.Frame(self.mainframe)
 
-        # Create duty cycle setting
-        duty_cycle_frame = ttk.Frame(self.Control_Frame, padding="10 5")
-        dc_label = ttk.Label(duty_cycle_frame, text="Select duty cycle: ")
-        dc_entry = ttk.Combobox(duty_cycle_frame, width=4, textvariable=self.Duty_cycle, values=("10", "20", "30", "40", "50", "60", "70", "80", "90", "100"))
-        dc_entry.set("10")
-        dc_units = ttk.Label(duty_cycle_frame, text="%")
-        dc_spacer = ttk.Frame(duty_cycle_frame)
-
-        # Pack widgets into duty_cycle_frame
-        dc_label.pack(side=LEFT)
-        dc_spacer.pack(side=LEFT)
-        dc_units.pack(side=RIGHT)
-        dc_entry.pack(side=RIGHT)
-
         # Create frame and widgets for run time setting
         run_time_frame = ttk.Frame(self.Control_Frame, padding="10 5")
         rt_label = ttk.Label(run_time_frame, text="Enter desired run time \n(Enter 0 to run indefinitely): ")
@@ -74,7 +59,6 @@ class MainGUI(tkinter.Tk):
         rt_units.pack(side=LEFT)
 
         # Pack elements into self.Control_Frame using a grid layout
-        # duty_cycle_frame.grid(column=0, row=0, sticky="w")
         run_time_frame.grid(column=0, row=1, sticky="w")
 
         """ Create major frame for run buttons """ 
