@@ -2,7 +2,7 @@
 # import threading
 from gui import MainGUI
 import random
-# from dia_pump import Pump_Control
+from dia_pump import Pump_Control
 
 def freq_test():
     freq = []
@@ -19,16 +19,16 @@ def run_func():
 if __name__ == '__main__':
 
     gui = MainGUI()
-    # pump = Pump_Control()
+    pump = Pump_Control()
 
-    """gui.set_freq_callback( pump.get_freq )
-    gui.set_run_callback( pump.run )
-    gui.set_stop_callback( pump.stop )"""
-    gui.set_freq_callback( freq_test )
+    gui.set_freq_callback( pump.get_freq )
+    gui.set_run_callback( pump.run_all )
+    gui.set_stop_callback( pump.stop_all )
+    # gui.set_freq_callback( freq_test )
     if gui.DEBUG: print("Set freq callback")
-    gui.set_run_callback( run_func )
+    # gui.set_run_callback( run_func )
     if gui.DEBUG: print("Set run callback")
-    gui.set_stop_callback( stop_func )
+    # gui.set_stop_callback( stop_func )
     if gui.DEBUG: print("Set stop callback")
 
     # gui_thread = threading.Thread( target=window.mainloop() )
