@@ -2,6 +2,8 @@ from tkinter import *
 import tkinter
 import tkinter.ttk as ttk
 import math
+import time
+from datetime import timedelta
 from logger import Logger
 
 class MainGUI(tkinter.Tk):
@@ -19,15 +21,16 @@ class MainGUI(tkinter.Tk):
 
         self.Run_time = StringVar()
         self.rt_unit = StringVar()
+        self.rt = 0
 
-        self.timer_interval = 5 * self.time_units["sec"]
+        self.timer_interval = 5 * self.time_units["min"]
 
         # Log related vars
         self.FILE_PATH = "tach_log.csv"
         self.STOP_MSG = "Stopped pumps"
         self.RUN_MSG = "Started pumps"
         self.NO_INPUT = ["---","---","---","---","---"]
-        self.LOG_INTERVAL = 10 #Defines automatic logging interval in seconds
+        self.LOG_INTERVAL = 10 * self.time_units["min"] # Defines automatic logging interval
         self.is_running = False
 
         """Initialize Logging"""
@@ -45,7 +48,7 @@ class MainGUI(tkinter.Tk):
         """ Create first major frame for test settings  """
         self.Control_Frame = ttk.Frame(self.mainframe)
 
-        # Create frame and widgets for run time setting
+        # Create frame and widgets for run time setting 
         run_time_frame = ttk.Frame(self.Control_Frame, padding="10 5")
         rt_label = ttk.Label(run_time_frame, text="Enter desired run time \n(Enter 0 to run indefinitely): ")
         rt_entry = ttk.Entry(run_time_frame, width=6, textvariable=self.Run_time)
@@ -95,11 +98,13 @@ class MainGUI(tkinter.Tk):
         if self.run_callback is not None and self.is_running is not True:
             self.run_callback()
             self.is_running = True
-            rt = int( self.Run_time.get() )
+            self.rt = int( self.Run_time.get() )
             unit = self.rt_unit.get()
-            if  rt > 0:
-                self.after( rt * 1000 * self.time_units[unit], self.stop_handler )
-                self.timer( rt * self.time_units[unit] )
+            self.rt = self.rt * self.time_units[unit]
+            if  self.rt > 0:
+                self.init_time = time.monotonic()
+                self.after( self.rt * 1000, self.stop_handler )
+                self.timer()
 
             self.logger.write(self.NO_INPUT, self.RUN_MSG)
             self.after( self.LOG_INTERVAL * 1000, self.auto_log )
@@ -115,7 +120,7 @@ class MainGUI(tkinter.Tk):
         if self.freq_callback is not None and self.is_running:
             freq = self.freq_callback()
             self.logger.write(freq, "Manual freq log")
-            if self.DEBUG: print("Pump 1: {}, Pump 2: {}, Pump 3: {}, Pump 4: {}, Pump 5: {}".format(freq[0], freq[1], freq[2], freq[3], freq[4]) )
+            if self.DEBUG: print(f"Pump 1: {freq[0]}, Pump 2: {freq[1]}, Pump 3: {freq[2]}, Pump 4: {freq[3]}, Pump 5: {freq[4]}")
         else:
             print("Error, freq callback not set or pumps not running")
         if self.DEBUG: print("Done.")
@@ -140,11 +145,24 @@ class MainGUI(tkinter.Tk):
         else:
             print("Testing stop button")
 
-    def timer( self, time ):
-        hour = math.floor(time / self.time_units["hr"])
-        minute = math.floor((time - hour * self.time_units["hr"]) / 60)
-        sec = time - hour * self.time_units["hr"] - minute * self.time_units["min"]
-        print("Time left in test: {:02d}:{:02d}:{:02d}".format(hour, minute, sec))
+    def timer( self ):
+        
+        # hour = math.floor(time / self.time_units["hr"])
+        # minute = math.floor((time - hour * self.time_units["hr"]) / 60)
+        # sec = time - hour * self.time_units["hr"] - minute * self.time_units["min"]
+        # print(f"Time elapsed: {hour:02d}:{minute:02d}:{sec:02d} of {total_hour:d} hours")
 
-        if self.is_running and (time-self.timer_interval > 0):
-            self.after(self.timer_interval * 1000, self.timer, time - self.timer_interval)
+        # if self.is_running and (time-self.timer_interval < self.rt):
+        #     self.after(self.timer_interval * 1000, self.timer, time + self.timer_interval)
+        
+        total_time = time.gmtime(self.rt)
+        total_time = time.strftime("%H:%M:%S", total_time)
+        
+        current_time = time.monotonic()
+        delta = current_time - self.init_time   # in seconds
+        elapsed = time.gmtime(delta)
+        elapsed = time.strftime("%H:%M:%S", elapsed)
+        print(f"Time elapsed: {elapsed} of {total_time}")
+        
+        if delta + self.timer_interval < self.rt and self.is_running:
+            self.after(self.timer_interval * 1000, self.timer)
